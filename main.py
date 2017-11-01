@@ -68,9 +68,9 @@ class CNNNetwork(torch.nn.Module):
 
 model1 = CNNNetwork()
 print("model:",model1)
-# model1.cuda()
+model1.cuda()
 
-# model1 = torch.nn.parallel.DataParallel(model1)
+model1 = torch.nn.parallel.DataParallel(model1)
 images, labels = importData(folder = "./datatext/", clip = 100) # default directory is "./datatext/". set clip = -1 for accessing whole db 
 # print("sdad")
 # print(images, labels)
@@ -95,7 +95,7 @@ def train(images, labels, num_epochs = 10):
             label = labels[i]
             label = np.asarray(label)
             label = torch.Tensor(label)
-            # label = label.cuda(async=True)
+            label = label.cuda(async=True)
             label = Variable(label)
             #print("images", images.size())
             #print("labels", labels.size())
@@ -129,8 +129,10 @@ def test(images, labels):
         label1 = np.asarray(label1)
         label1 = torch.Tensor(label1)
         # label = label.cuda()
+        image1 = image1.cuda()
         image1 = Variable(image1)
         image1 = image1.unsqueeze(0)
+        label1 = label1.cuda()
         label1 = Variable(label1)
         pred_out = model1(image1)
         val, idx1 = torch.max(pred_out[:62], 0)
