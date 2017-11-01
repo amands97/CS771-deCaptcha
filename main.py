@@ -68,8 +68,11 @@ class CNNNetwork(torch.nn.Module):
 
 model1 = CNNNetwork()
 print("model:",model1)
+# model1.cuda()
+
+# model1 = torch.nn.parallel.DataParallel(model1)
 images, labels = importData(folder = "./datatext/", clip = 100) # default directory is "./datatext/". set clip = -1 for accessing whole db 
-print("sdad")
+# print("sdad")
 # print(images, labels)
 criterion = nn.MultiLabelSoftMarginLoss()
 
@@ -107,10 +110,64 @@ def train(images, labels, num_epochs = 10):
             losses.append(loss.data.mean())
             print("epoch:%d iteration:%d loss:%f"%(n,i,loss.data.mean()))
         # losses.append(rloss)
-        print('[%d/%d] Loss: %.3f' % (epoch+1, num_epochs, np.mean(losses)))
+        print('[%d/%d] Loss: %.3f' % (n+1, num_epochs, np.mean(losses)))
     return losses
 
 
+def test(images, labels):
+    # Write loops for testing the model on the test set
+    # You should also print out the accuracy of the model
+    model1.eval()
+    correct = 0
+    total = 0
+    
+    for i, image1 in enumerate(images):
+        predicted_label = []
+        image1 = preprocess(image1)
+        # image1 = image1.cuda()
+        label1 = labels[i]
+        label1 = np.asarray(label1)
+        label1 = torch.Tensor(label1)
+        # label = label.cuda()
+        image1 = Variable(image1)
+        image1 = image1.unsqueeze(0)
+        label1 = Variable(label1)
+        pred_out = model1(image1)
+        val, idx1 = torch.max(pred_out[:62], 0)
+        # idx1 = idx1.numpy()
+        idx1 = idx1.data.numpy()[0]
+        print(idx1)
+        predicted_label.append(np.eye(62)[idx1])
+        val, idx2 = torch.max(pred_out[62:124], 0)
+        
+        idx2 = idx2.data.numpy()[0]
+        predicted_label.append(np.eye(62)[idx2])
+        val, idx3 = torch.max(pred_out[124:186], 0)
+        
+        idx3 = idx3.data.numpy()[0]
+        predicted_label.append(np.eye(62)[idx3])
+        val, idx4 = torch.max(pred_out[186:248], 0)
+        idx4 = idx4.data.numpy()[0]
+
+        predicted_label.append(np.eye(62)[idx4])
+        val, idx5 = torch.max(pred_out[248:310], 0)
+        
+        idx5 = idx5.data.numpy()[0]
+        predicted_label.append(np.eye(62)[idx5])
+        val, idx6 = torch.max(pred_out[310:372], 0)
+        
+        idx6 = idx6.data.numpy()[0]
+        predicted_label.append(np.eye(62)[idx6])
+        # _, pred_out = torch.max(pred_out.data, 0)
+        predicted_label = np.asarray(predicted_label)
+        print(predicted_label)
+        predicted_label = torch.Tensor(predicted_label)
+        predicted_label = Variable(predicted_label)
+
+        total += label1.size(0)
+        print("total:%d correct:%d"%(total, correct))
+    print("Accuracy:",(100*correct/total))
 
 
-train(images, labels, 10)
+train(images, labels, 1)
+test(images, labels)
