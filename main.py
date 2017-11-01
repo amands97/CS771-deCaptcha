@@ -71,7 +71,8 @@ print("model:",model1)
 model1.cuda()
 
 model1 = torch.nn.parallel.DataParallel(model1)
-images, labels = importData(folder = "./datatext/", clip = 100) # default directory is "./datatext/". set clip = -1 for accessing whole db 
+images, labels, labelsNormal = importData(folder = "./datatext/", clip = 1000) # default directory is "./datatext/". set clip = -1 for accessing whole db 
+print("Data import completed")
 # print("sdad")
 # print(images, labels)
 criterion = nn.MultiLabelSoftMarginLoss()
@@ -90,6 +91,7 @@ def train(images, labels, num_epochs = 10):
             #image = image.cuda(async=True)
             # print(i)
             image = preprocess(image)
+            image = image.cuda()
             image = Variable(image)
             # print(image)
             label = labels[i]
@@ -114,7 +116,7 @@ def train(images, labels, num_epochs = 10):
     return losses
 
 
-def test(images, labels):
+def test(images, labels, labelsNormal):
     # Write loops for testing the model on the test set
     # You should also print out the accuracy of the model
     model1.eval()
@@ -137,39 +139,43 @@ def test(images, labels):
         pred_out = model1(image1)
         val, idx1 = torch.max(pred_out[:62], 0)
         # idx1 = idx1.numpy()
-        idx1 = idx1.data.numpy()[0]
-        print(idx1)
-        predicted_label.append(np.eye(62)[idx1])
+        idx1 = idx1.cpu().data.numpy()[0]
+        # print(idx1)
+        # predicted_label.append(np.eye(62)[idx1])
         val, idx2 = torch.max(pred_out[62:124], 0)
         
-        idx2 = idx2.data.numpy()[0]
-        predicted_label.append(np.eye(62)[idx2])
+        idx2 = idx2.cpu().data.numpy()[0]
+        # predicted_label.append(np.eye(62)[idx2])
         val, idx3 = torch.max(pred_out[124:186], 0)
         
-        idx3 = idx3.data.numpy()[0]
-        predicted_label.append(np.eye(62)[idx3])
+        idx3 = idx3.cpu().data.numpy()[0]
+        # predicted_label.append(np.eye(62)[idx3])
         val, idx4 = torch.max(pred_out[186:248], 0)
-        idx4 = idx4.data.numpy()[0]
+        idx4 = idx4.cpu().data.numpy()[0]
 
-        predicted_label.append(np.eye(62)[idx4])
+        # predicted_label.append(np.eye(62)[idx4])
         val, idx5 = torch.max(pred_out[248:310], 0)
         
-        idx5 = idx5.data.numpy()[0]
-        predicted_label.append(np.eye(62)[idx5])
+        idx5 = idx5.cpu().data.numpy()[0]
+        # predicted_label.append(np.eye(62)[idx5])
         val, idx6 = torch.max(pred_out[310:372], 0)
         
-        idx6 = idx6.data.numpy()[0]
-        predicted_label.append(np.eye(62)[idx6])
-        # _, pred_out = torch.max(pred_out.data, 0)
-        predicted_label = np.asarray(predicted_label)
-        print(predicted_label)
-        predicted_label = torch.Tensor(predicted_label)
-        predicted_label = Variable(predicted_label)
+        idx6 = idx6.cpu().data.numpy()[0]
+        # predicted_label.append(np.eye(62)[idx6])
 
+        # predicted_label = np.asarray(predicted_label)
+        # print(predicted_label)
+        if idx1 == labelsNormal[i][0] and idx2 == labelsNormal[i][1] and idx3 == labelsNormal[i][2] and idx4 == labelsNormal[i][3] and idx5 == labelsNormal[i][4] and idx6 == labelsNormal[i][5]:
+            correct = correct + 1
+        print(idx1, labelsNormal[i][0])
+        # predicted_label = torch.Tensor(predicted_label)
+        # predicted_label = Variable(predicted_label)
+        # if(predicted_label == label1):
+            # correct = correct + 1
         total += label1.size(0)
         print("total:%d correct:%d"%(total, correct))
     print("Accuracy:",(100*correct/total))
 
 
-train(images, labels, 1)
-test(images, labels)
+train(images, labels, 10)
+test(images, labels, labelsNormal)
