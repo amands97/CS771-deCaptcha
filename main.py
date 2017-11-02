@@ -114,7 +114,8 @@ def train(images, labels, num_epochs = 10):
         # losses.append(rloss)
         print('[%d/%d] Loss: %.3f' % (n+1, num_epochs, np.mean(losses)))
 	 # ... after training, save your model 
-        torch.save(model1,'/users/btech/dsinghvi/mytraining.pt')
+        #torch.save(model1,'/users/btech/dsinghvi/mytraining.pt')
+        torch.save(model1,'resnet.pt')
     return losses
 
 
@@ -123,7 +124,8 @@ def test(images, labels, labelsNormal):
     # You should also print out the accuracy of the model
     
     # .. to load your previously training model:
-    model1 = torch.load('/users/btech/dsinghvi/mytraining.pt')
+    #model1 = torch.load('/users/btech/dsinghvi/mytraining.pt')
+    model1 = torch.load('resnet.pt')
     model1.eval()
     correct = 0
     total = 0
