@@ -68,10 +68,10 @@ class CNNNetwork(torch.nn.Module):
 
 model1 = CNNNetwork()
 print("model:",model1)
-model1.cuda()
 
+model1.cuda()
 model1 = torch.nn.parallel.DataParallel(model1)
-images, labels, labelsNormal = importData(folder = "./datatext/", clip = 1000) # default directory is "./datatext/". set clip = -1 for accessing whole db 
+images, labels, labelsNormal = importData(folder = "./10data/", clip = 10) # default directory is "./datatext/". set clip = -1 for accessing whole db 
 print("Data import completed")
 # print("sdad")
 # print(images, labels)
@@ -113,12 +113,17 @@ def train(images, labels, num_epochs = 10):
             print("epoch:%d iteration:%d loss:%f"%(n,i,loss.data.mean()))
         # losses.append(rloss)
         print('[%d/%d] Loss: %.3f' % (n+1, num_epochs, np.mean(losses)))
+	 # ... after training, save your model 
+        torch.save(model1,'/users/btech/dsinghvi/mytraining.pt')
     return losses
 
 
 def test(images, labels, labelsNormal):
     # Write loops for testing the model on the test set
     # You should also print out the accuracy of the model
+    
+    # .. to load your previously training model:
+    model1 = torch.load('/users/btech/dsinghvi/mytraining.pt')
     model1.eval()
     correct = 0
     total = 0
@@ -168,6 +173,11 @@ def test(images, labels, labelsNormal):
         if idx1 == labelsNormal[i][0] and idx2 == labelsNormal[i][1] and idx3 == labelsNormal[i][2] and idx4 == labelsNormal[i][3] and idx5 == labelsNormal[i][4] and idx6 == labelsNormal[i][5]:
             correct = correct + 1
         print(idx1, labelsNormal[i][0])
+        print(idx2, labelsNormal[i][1])
+        print(idx3, labelsNormal[i][2])
+        print(idx4, labelsNormal[i][3])
+        print(idx5, labelsNormal[i][4])
+        print(idx6, labelsNormal[i][5])
         # predicted_label = torch.Tensor(predicted_label)
         # predicted_label = Variable(predicted_label)
         # if(predicted_label == label1):
@@ -178,4 +188,5 @@ def test(images, labels, labelsNormal):
 
 
 train(images, labels, 10)
+images, labels, labelsNormal = importData(folder = "./full/", clip = 10) # default directory is "./datatext/". set clip = -1 for accessing whole db 
 test(images, labels, labelsNormal)

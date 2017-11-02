@@ -19,7 +19,7 @@ def importData(folder = "./datatext/", clip = -1):
         # print(file)
         if file.endswith('.jpg'):
             path = os.getcwd()
-            path = path + "/datatext/" + file
+            path = path + folder[1:] + file
             image = pil_loader(path)
             image = image.resize((180, 50), Image.ANTIALIAS)
             images.append(image)
