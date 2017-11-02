@@ -71,7 +71,7 @@ print("model:",model1)
 model1.cuda()
 
 model1 = torch.nn.parallel.DataParallel(model1)
-images, labels, labelsNormal = importData(folder = "./datatext/", clip = 1000) # default directory is "./datatext/". set clip = -1 for accessing whole db 
+images, labels, labelsNormal = importData(folder = "./datatext/", clip = 5000) # default directory is "./datatext/". set clip = -1 for accessing whole db 
 print("Data import completed")
 # print("sdad")
 # print(images, labels)
@@ -178,4 +178,5 @@ def test(images, labels, labelsNormal):
 
 
 train(images, labels, 10)
+torch.save(model1.state_dict(), 'resnet.pkl')
 test(images, labels, labelsNormal)
