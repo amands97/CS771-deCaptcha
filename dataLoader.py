@@ -13,7 +13,10 @@ def pil_loader(path):
             lab_profile  = ImageCms.createProfile("LAB")
             rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(srgb_profile, lab_profile, "RGB", "LAB")
             lab_im = ImageCms.applyTransform(img, rgb2lab_transform)
-            return lab_im
+            # print(img)
+            l,a,b = lab_im.split()
+            # print(l)
+            return l
 
 def importData(folder = "./datatext/", clip = -1):
     images = []

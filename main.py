@@ -20,15 +20,19 @@ batchSize = 64
 class CNNNetwork(torch.nn.Module):
     def __init__(self):
         super(CNNNetwork, self).__init__()
-        self.conv1 = nn.Conv2d(3, 48, kernel_size = (5,5), padding = 2, stride = 2)
+        self.conv1 = nn.Conv2d(1, 48, kernel_size = (5,5), padding = 2, stride = 2)
+        # self.conv1 = nn.Conv2d(1, 48, kernel_size = (5,5), stride = 2)
         # self.relu1 = nn.functional.relu(inplace = True)
         self.dropout1 = nn.Dropout(p=0.2)
         self.maxpool1 =  nn.MaxPool2d(kernel_size = (2,2), stride = 2)
         self.conv2 = nn.Conv2d(48, 64, kernel_size = (5,5), padding = 2)
+
+        # self.conv2 = nn.Conv2d(48, 64, kernel_size = (5,5))
         # self.relu2 = nn.functional.relu(inplace = True)
         self.dropout2 = nn.Dropout(p=0.2)
         self.maxpool2 = nn.MaxPool2d(kernel_size = (2,2), stride = 1)
         self.conv3 = nn.Conv2d(64, 128, kernel_size = (5,5), padding = 2)
+        # self.conv3 = nn.Conv2d(64, 128, kernel_size = (5,5))
         # self.relu3 = nn.functional.relu(inplace = True)
         self.dropout3 = nn.Dropout(p=0.2)
         self.maxpool3 = nn.MaxPool2d(kernel_size = (2,2), stride = 2)
@@ -69,7 +73,7 @@ print("model:",model1)
 
 model1.cuda()
 model1 = torch.nn.parallel.DataParallel(model1)
-images, labels, labelsNormal = importData(folder = "./data2/", clip = 10000) # default directory is "./datatext/". set clip = -1 for accessing whole db 
+images, labels, labelsNormal = importData(folder = "./data2/", clip = 5000) # default directory is "./datatext/". set clip = -1 for accessing whole db 
 print("Data import completed")
 # print("sdad")
 # print(images, labels)
@@ -80,7 +84,7 @@ preprocess = transforms.Compose([
    transforms.ToTensor()
 ])
 optimizer = torch.optim.Adam(model1.parameters(), lr = 0.0001)
-def train(images, labels, num_epochs = 10):
+def train(images, labels, num_epochs = 50):
     losses = []
     for n in range(num_epochs):
         rloss = 0
