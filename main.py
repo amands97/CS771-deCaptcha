@@ -9,8 +9,6 @@ import torchvision.datasets as dset
 from torch.autograd import Variable
 import torchvision.models as models
 import pickle as pkl
-#%matplotlib inline
-#import matplotlib.pyplot as plt
 import os
 import os.path
 from PIL import Image
@@ -71,7 +69,7 @@ print("model:",model1)
 
 model1.cuda()
 model1 = torch.nn.parallel.DataParallel(model1)
-images, labels, labelsNormal = importData(folder = "./10data/", clip = 10) # default directory is "./datatext/". set clip = -1 for accessing whole db 
+images, labels, labelsNormal = importData(folder = "./data2/", clip = 10000) # default directory is "./datatext/". set clip = -1 for accessing whole db 
 print("Data import completed")
 # print("sdad")
 # print(images, labels)
@@ -136,8 +134,8 @@ def test(images, labels, labelsNormal):
         # image1 = image1.cuda()
         label1 = labels[i]
         label1 = np.asarray(label1)
-        label1 = torch.Tensor(label1)
         # label = label.cuda()
+        label1 = torch.Tensor(label1)
         image1 = image1.cuda()
         image1 = Variable(image1)
         image1 = image1.unsqueeze(0)
@@ -190,5 +188,5 @@ def test(images, labels, labelsNormal):
 
 
 train(images, labels, 10)
-images, labels, labelsNormal = importData(folder = "./full/", clip = 10) # default directory is "./datatext/". set clip = -1 for accessing whole db 
+images, labels, labelsNormal = importData(folder = "./data2/", clip = 1000) # default directory is "./datatext/". set clip = -1 for accessing whole db 
 test(images, labels, labelsNormal)

@@ -1,14 +1,19 @@
 import os
 import sys
-from PIL import Image
+from PIL import Image, ImageCms
 import numpy as np
-from torchvision import transforms
 import torch
+from torchvision import transforms
 
 def pil_loader(path):
     with open(path, 'rb') as f:
         with Image.open(f) as img:
-            return img.convert('RGB')
+            img = img.convert('RGB')
+            srgb_profile = ImageCms.createProfile("sRGB")
+            lab_profile  = ImageCms.createProfile("LAB")
+            rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(srgb_profile, lab_profile, "RGB", "LAB")
+            lab_im = ImageCms.applyTransform(img, rgb2lab_transform)
+            return lab_im
 
 def importData(folder = "./datatext/", clip = -1):
     images = []
