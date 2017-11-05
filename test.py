@@ -66,13 +66,13 @@ class CNNNetwork(torch.nn.Module):
         out = self.fc2(out)
         return out
 
-model1 = CNNNetwork()
-print("model:",model1)
+#model1 = CNNNetwork()
+#print("model:",model1)
 
-model1.cuda()
-model1 = torch.nn.parallel.DataParallel(model1)
-images, labels, labelsNormal = importData(folder = "./datatext/", clip = -1) # default directory is "./datatext/". set clip = -1 for accessing whole db 
-print("Data import completed")
+#model1.cuda()
+#model1 = torch.nn.parallel.DataParallel(model1)
+#images, labels, labelsNormal = importData(folder = "./datatext/", clip = -1) # default directory is "./datatext/". set clip = -1 for accessing whole db 
+#print("Data import completed")
 # print("sdad")
 # print(images, labels)
 criterion = nn.MultiLabelSoftMarginLoss()
@@ -81,7 +81,7 @@ preprocess = transforms.Compose([
 
    transforms.ToTensor()
 ])
-optimizer = torch.optim.Adam(model1.parameters(), lr = 0.0001)
+#optimizer = torch.optim.Adam(model1.parameters(), lr = 0.0001)
 def train(images, labels, num_epochs = 20):
     losses = []
     for n in range(num_epochs):
@@ -129,7 +129,7 @@ def test(images, labels, labelsNormal):
     model1.eval()
     correct = 0
     total = 0
-    
+    percharcorrect = 0
     for i, image1 in enumerate(images):
         predicted_label = []
         image1 = preprocess(image1)
@@ -172,6 +172,7 @@ def test(images, labels, labelsNormal):
 
         # predicted_label = np.asarray(predicted_label)
         # print(predicted_label)
+        
         if idx1 == labelsNormal[i][0] and idx2 == labelsNormal[i][1] and idx3 == labelsNormal[i][2] and idx4 == labelsNormal[i][3] and idx5 == labelsNormal[i][4] and idx6 == labelsNormal[i][5]:
             correct = correct + 1
         print(idx1, labelsNormal[i][0])
@@ -180,15 +181,28 @@ def test(images, labels, labelsNormal):
         print(idx4, labelsNormal[i][3])
         print(idx5, labelsNormal[i][4])
         print(idx6, labelsNormal[i][5])
+        if idx1 == labelsNormal[i][0]:
+            percharcorrect+=1
+        if idx2 == labelsNormal[i][1]:
+            percharcorrect+=1
+        if idx3 == labelsNormal[i][2]:
+            percharcorrect+=1
+        if idx4 == labelsNormal[i][3]:
+            percharcorrect+=1
+        if idx5 == labelsNormal[i][4]:
+            percharcorrect+=1
+        if idx6 == labelsNormal[i][5]:
+            percharcorrect+=1
         # predicted_label = torch.Tensor(predicted_label)
         # predicted_label = Variable(predicted_label)
         # if(predicted_label == label1):
             # correct = correct + 1
         total += label1.size(0)
-        print("total:%d correct:%d"%(total, correct))
-    print("Accuracy:",(100*correct/total))
+        print("total:%d correct:%d totalchar:%d percharcorrect:%d"%(total/6, correct,total,percharcorrect))
+    print("Accuracy:",(600*correct/total))
+    print("perCharAccuracy:",(100*percharcorrect/total))
 
 
-train(images, labels, 10)
-images, labels, labelsNormal = importData(folder = "./full/", clip = 10) # default directory is "./datatext/". set clip = -1 for accessing whole db 
+#train(images, labels, 10)
+images, labels, labelsNormal = importData(folder = "./datatext/", clip = -1) # default directory is "./datatext/". set clip = -1 for accessing whole db 
 test(images, labels, labelsNormal)
