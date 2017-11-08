@@ -13,10 +13,10 @@ def pil_loader(path):
             lab_profile  = ImageCms.createProfile("LAB")
             rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(srgb_profile, lab_profile, "RGB", "LAB")
             lab_im = ImageCms.applyTransform(img, rgb2lab_transform)
-            # print(img)
+            # print(img)``
             l,a,b = lab_im.split()
             # print(l)
-            return l
+            return img
 
 def importData(folder = "./datatext/", clip = -1):
     images = []
@@ -29,7 +29,8 @@ def importData(folder = "./datatext/", clip = -1):
             path = os.getcwd()
             path = path + folder[1:] + file
             image = pil_loader(path)
-            image = image.resize((180, 50), Image.ANTIALIAS)
+            # image = image.resize((180, 50), Image.ANTIALIAS)
+            image = image.resize((224, 224), Image.ANTIALIAS)
             images.append(image)
             label = file.split(".")[0]
             label2 = []

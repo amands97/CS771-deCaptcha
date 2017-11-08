@@ -77,14 +77,14 @@ images, labels, labelsNormal = importData(folder = "./data2/", clip = 5000) # de
 print("Data import completed")
 # print("sdad")
 # print(images, labels)
-criterion = nn.MultiLabelSoftMarginLoss()
+criterion = nn.MultiLabelSoftMarginLoss().cuda()
 
 preprocess = transforms.Compose([
 
    transforms.ToTensor()
 ])
 optimizer = torch.optim.Adam(model1.parameters(), lr = 0.0001)
-def train(images, labels, num_epochs = 50):
+def train(model1,images, labels, num_epochs = 50):
     losses = []
     for n in range(num_epochs):
         rloss = 0
@@ -146,6 +146,8 @@ def test(images, labels, labelsNormal):
         label1 = label1.cuda()
         label1 = Variable(label1)
         pred_out = model1(image1)
+        print(pred_out)
+        pred_out = pred_out.transpose(0,1)
         val, idx1 = torch.max(pred_out[:62], 0)
         # idx1 = idx1.numpy()
         idx1 = idx1.cpu().data.numpy()[0]
@@ -190,7 +192,11 @@ def test(images, labels, labelsNormal):
         print("total:%d correct:%d"%(total, correct))
     print("Accuracy:",(100*correct/total))
 
-
-train(images, labels, 10)
+resnet18 = models.resnet18(pretrained=True)
+resnet18.fc = nn.Linear(resnet18.fc.in_features, 372)
+resnet18.cuda()
+resnet18 = torch.nn.parallel.DataParallel(resnet18)
+train(resnet18, images, labels, 10)
+print("reached")
 images, labels, labelsNormal = importData(folder = "./data2/", clip = 1000) # default directory is "./datatext/". set clip = -1 for accessing whole db 
 test(images, labels, labelsNormal)
